@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="./threeTel.js"></script>
+  <script src="./GLTFLoader.js"></script>
+  <script src="./OrbitControls.js"></script>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <script>
+    var container;
+    var controls;//!位置控制
+    var carmera;
+    var sence;
+    var renderer;
+    var loader;
+    var light;
+    function init() {
+      container=document.createElement('div')
+      document.body.appendChild(container)
+      //!创建眼睛---这里是透视相机
+      carmera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.25, 1000);
+      carmera.position.set(-10,10,40)
+     
+      
+      //!创建世界---实质是场景
+      scene = new THREE.Scene();
+      
+      //添加光
+      light=new THREE.HemisphereLight(0xbbbbff,0x444422)
+      light.position.set(0,1,0)
+      scene.add(light)
+      //创建一个模型加载器
+      loader=new THREE.GLTFLoader().setPath('modules/img/')
+      loader.load('scene.gltf',function(gltf){
+        gltf.scene.scale.set(1,1,1)
+        scene.add(gltf.scene)
+      })
+      //把眼睛看到的世界绘制到html页面中切
+      renderer = new THREE.WebGLRenderer({
+        antialias:true
+      });
+      renderer.setPixelRatio(window.devicePixelRatio)
+      //设置场景的大小
+      renderer.setSize(window.innerWidth,window.innerHeight)
+      container.appendChild(renderer.domElement)
+      var axesHelper=new THREE.AxesHelper()
+      
+      // var planeBufferGeometry=new THREE.PlaneBufferGeometry(100,100)
+      // var plane=new THREE.Mesh(planeBufferGeometry,new THREE.MeshBasicMaterial({color:0xFFFFFF,side:DoubleSide}))
+      // scene.add(plane)
+      scene.add(axesHelper)
+      //!场景可以动起来
+      controls=new THREE.OrbitControls(carmera, renderer.domElement)
+      controls.target.set(0,-0.2,-0.2)
+      controls.update()
+    }
+    init();
+    animate()
+    function animate(){
+      requestAnimationFrame(animate)
+      renderer.render(scene,carmera)
+    }
+  </script>
+
+</body>
+
+</html>
